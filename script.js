@@ -27,13 +27,21 @@ function displayTodos() {
     result += `
         <tr>
         <td>${index + 1} </d>
-        <td>${item.isUpdating ? `<input type="text" data-index="${index}" value="${item.todo}"/>` : item.todo}</td>
-        <td><input onclick="toggleCompleted(${index})" type="checkbox" ${item.completed ? 'checked' : ""}  /></td>
+        <td>${
+          item.isUpdating
+            ? `<input type="text" data-index="${index}" value="${item.todo}"/>`
+            : item.todo
+        }</td>
+        <td><input onclick="toggleCompleted(${index})" type="checkbox" ${
+      item.completed ? "checked" : ""
+    }  /></td>
         <td>
-          ${item.isUpdating ? ` <button class="btn btn-success"
+          ${
+            item.isUpdating
+              ? ` <button class="btn btn-success"
             onclick="saveTodo(${index})">Save</button>`
-        :
-        `<button class="btn btn-primary" onclick="setUpdating(${index})">Update</button>`}
+              : `<button class="btn btn-primary" onclick="setUpdating(${index})">Update</button>`
+          }
             
 <button onclick="deletetodo(${index})" class="btn btn-danger ">Delete</button> 
         </td>
@@ -51,9 +59,26 @@ function toggleCompleted(indx) {
 }
 
 function deletetodo(index) {
-  Todos.splice(index, 1);
-  localStorage.setItem("todos", JSON.stringify(Todos));
-  displayTodos();
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      Todos.splice(index, 1);
+      localStorage.setItem("todos", JSON.stringify(Todos));
+      displayTodos();
+      Swal.fire({
+        title: "Deleted!",
+        text: "Your file has been deleted.",
+        icon: "success",
+      });
+    }
+  });
 }
 
 function setUpdating(index) {
@@ -62,15 +87,20 @@ function setUpdating(index) {
   displayTodos();
 }
 
-
-function saveTodo(index){
-const input = document.querySelector(`input[data-index ="${index}"]`)
-console.log(input, input.value);
-Todos[index].todo = input.value.trim()
-Todos[index].isUpdating = false;
-localStorage.setItem('todos' , JSON.stringify(Todos))
-displayTodos();
-
+function saveTodo(index) {
+  const input = document.querySelector(`input[data-index ="${index}"]`);
+  console.log(input, input.value);
+  Todos[index].todo = input.value.trim();
+  Todos[index].isUpdating = false;
+  localStorage.setItem("todos", JSON.stringify(Todos));
+  displayTodos();
+  Swal.fire({
+    position: "top-end",
+    icon: "success",
+    title: "Your work has been saved",
+    showConfirmButton: false,
+    timer: 1500,
+  });
 }
 
 displayTodos();
